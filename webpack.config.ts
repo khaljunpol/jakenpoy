@@ -4,7 +4,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 module.exports = {
   target: 'web',
-  entry: './src/game.ts',
+  entry: './src/launcher.ts',
   devtool: 'source-map',
   mode: 'development',
   stats: 'errors-only',

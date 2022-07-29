@@ -5,8 +5,6 @@ import { JakEnPoyGame } from "./code/JakEnPoyGame";
 export class GameLauncher extends Launcher {
     constructor() {
         super("JakEnPoy");
-
-        console.log("game launcher");
     }
 
     protected createGame(name: string): IGame {
