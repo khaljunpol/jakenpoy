@@ -51,6 +51,8 @@
     "webpack-obfuscator": "3.5.1"
   },
   "dependencies": {
+    "gsap": "^3.10.4",
+    "is-mobile": "^3.1.1",
     "jpgames-game-framework": "file:../jpgames-framework/game-framework",
     "jpgames-game-implementation-pixi": "file:../jpgames-framework/game-implementation-pixi",
     "pixi.js": "^6.5.1",
