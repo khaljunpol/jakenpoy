@@ -1,7 +1,7 @@
 import { IModel, IView } from "jpgames-game-framework";
 import { ComponentController, GAME_LOOP_STATES, STATE_ACTIONS } from "jpgames-game-implementation-pixi";
 import { JnPGameModel } from "../../Game/JnPGameModel";
-import { SELECTION } from "../../JakEnPoyConstants";
+import { RESULT, SELECTION } from "../../JakEnPoyConstants";
 import { RockPaperScissorsModel, RPS_GAME_STATE } from "./RockPaperScissorsModel";
 import { RockPaperScissorsView } from "./RockPaperScissorsView";
 
@@ -19,25 +19,33 @@ export class RockPaperScissorsController extends ComponentController {
     }
 
     public onUpdateGameState(state: any) {
-        if (state.context.state == GAME_LOOP_STATES.PLAY) {
 
-            console.log(state.context);
+        if (state.context.state == GAME_LOOP_STATES.PLAY) {
+            // console.log(state.context);
 
             this._playerHand = state.context.playerHand;
             this._compHand = state.context.compHand;
 
-            console.log("RPS", state.value);
-            console.log("RPS", state.context.state);
             if (state.matches(`${GAME_LOOP_STATES.PLAY}.${STATE_ACTIONS.SETUP}`)) {
-                console.log("SHOW");
                 this.componentView.show();
             }
+        }
 
-            if (state.matches(`${GAME_LOOP_STATES.PLAY}.${STATE_ACTIONS.END_PROCESS}`)) {
-                console.log("HIDE");
-                // this.componentView.hide();
+        if (state.context.state == GAME_LOOP_STATES.END) {
+            console.log("1", state.context.result);
+            if (state.matches(`${GAME_LOOP_STATES.END}.${STATE_ACTIONS.END_PROCESS}`)) {
+                console.log("2", state.context.result);
+                if (!state.context.draw) {
+                    (this.componentView as RockPaperScissorsView).showWin(state.context.result == RESULT.WIN);
+                }
+            }
+
+            if (state.matches(`${GAME_LOOP_STATES.END}.ADDITIONAL_END_PROCESS`)) {
+                this.componentView.hide();
             }
         }
+
+        
     }
 
     protected createModel(name: string): IModel {
@@ -63,8 +71,8 @@ export class RockPaperScissorsController extends ComponentController {
             case RPS_GAME_STATE.SHOW:
                 // Continue to exit
                 this._gameController.sendAction("DONE_SHOW");
-
                 break;
+
             case RPS_GAME_STATE.EXIT:
                 break;
         }

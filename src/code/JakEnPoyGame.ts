@@ -1,15 +1,17 @@
 import { IGameController } from "jpgames-game-framework";
 import { ComponentController, GameController } from "jpgames-game-implementation-pixi";
 import { Game } from "jpgames-game-implementation-pixi/src/Game/Game";
+import { ResultsController } from "./Components/Results/ResultsController";
 import { RockPaperScissorsController } from "./Components/RockPaperScissors/RockPaperScissorsController";
 import { SelectionController } from "./Components/Selection/SelectionController";
 import { JnPGameController } from "./Game/JnPGameController";
-import { RockPaperScissorsModelKey, SelectionModelKey } from "./JakEnPoyConstants";
+import { ResultsModelKey, RockPaperScissorsModelKey, SelectionModelKey } from "./JakEnPoyConstants";
 
 export class JakEnPoyGame extends Game {
 
     protected _selectionControlller: SelectionController;
     protected _rockPaperScissorsController: RockPaperScissorsController;
+    protected _resultsController: ResultsController;
 
     public init(): void {
         super.init();
@@ -22,6 +24,10 @@ export class JakEnPoyGame extends Game {
         this._rockPaperScissorsController = new RockPaperScissorsController(this._name, this._controller);
         this.installControllerSchemaToGameLoop(this._rockPaperScissorsController, RockPaperScissorsModelKey);
 
+        // Create Results Controller component
+        this._resultsController = new ResultsController(this._name, this._controller);
+        this.installControllerSchemaToGameLoop(this._resultsController, ResultsModelKey);
+
         // Initialize the game model state data
         // This will create the state machine
         this._controller.init();
@@ -29,6 +35,7 @@ export class JakEnPoyGame extends Game {
         // Subscribe selection controller to the game loop state subject
         this._controller.model.subject.subscribe({ next: (state) => this._selectionControlller.onUpdateGameState(state) });
         this._controller.model.subject.subscribe({ next: (state) => this._rockPaperScissorsController.onUpdateGameState(state) });
+        this._controller.model.subject.subscribe({ next: (state) => this._resultsController.onUpdateGameState(state) });
 
         this._controller.start();
     }
@@ -42,6 +49,9 @@ export class JakEnPoyGame extends Game {
             .add("scissors", "../assets/scissors.png")
             .add("rock", "../assets/rock.png")
             .add("paper", "../assets/paper.png")
+            .add("win", "../assets/win.png")
+            .add("lose", "../assets/lose.png")
+            .add("draw", "../assets/draw.png")
             .load(() => this.onLoadComplete())
     }
 

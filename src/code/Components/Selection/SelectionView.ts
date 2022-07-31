@@ -21,9 +21,7 @@ export class SelectionView extends ComponentView {
 
     public show(): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            if (this._isShown)
-                return;
-
+ 
             this.interactiveChildren = false;
 
             super.show();
@@ -39,8 +37,6 @@ export class SelectionView extends ComponentView {
 
     public hide(): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            if (!this._isShown)
-                return;
 
             gsap.fromTo(this._selections, 0.5, { alpha: 1 }, {
                 alpha: 0,

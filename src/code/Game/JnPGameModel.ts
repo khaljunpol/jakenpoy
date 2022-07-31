@@ -1,14 +1,19 @@
 import { GameModel, GAME_LOOP_STATES, STATE_ACTIONS } from "jpgames-game-implementation-pixi";
 import { assign, createMachine } from "xstate";
-import { RockPaperScissorsModelKey, SELECTION, SelectionModelKey } from "../JakEnPoyConstants";
+import { RESULT_STATE } from "../Components/Results/ResultsModel";
+import { RESULT, ResultsModelKey, RockPaperScissorsModelKey, SELECTION, SelectionModelKey } from "../JakEnPoyConstants";
 
 export class JnPGameModel extends GameModel {
 
     protected _selectionStateSchema: any;
     protected _rockPaperScissorsStateSchema: any;
+    protected _resultsStateSchema: any;
 
     protected _playerHand: SELECTION;
     protected _compHand: SELECTION;
+    protected _win: boolean;
+    protected _lose: boolean;
+    protected _draw: boolean;
 
     public attachStateSchema(key: string, schema: any): void {
         super.attachStateSchema(key, schema);
@@ -19,6 +24,10 @@ export class JnPGameModel extends GameModel {
 
         if (key == RockPaperScissorsModelKey) {
             this._rockPaperScissorsStateSchema = schema;
+        }
+
+        if (key == ResultsModelKey) {
+            this._resultsStateSchema = schema;
         }
     }
 
@@ -31,12 +40,19 @@ export class JnPGameModel extends GameModel {
         this._compHand = hand;
     }
 
+    public setWinLoseDraw(win: boolean, lose: boolean, draw: boolean){
+        this._win = win;
+        this._lose = lose;
+        this._draw = draw;
+    }
+
     protected createCoreLoopContext(): any {
         return {
             state: GAME_LOOP_STATES.START,
             win: 0,
             lose: 0,
             draw: 0,
+            result: RESULT.DRAW,
             playerHand: SELECTION.ROCK,
             compHand: SELECTION.ROCK
         }
@@ -56,7 +72,7 @@ export class JnPGameModel extends GameModel {
                         START: GAME_LOOP_STATES.START
                     },
                     after: {
-                        1000: { target: GAME_LOOP_STATES.START }
+                        3000: { target: GAME_LOOP_STATES.START }
                     }
                 },
                 [GAME_LOOP_STATES.START]: {
@@ -139,17 +155,29 @@ export class JnPGameModel extends GameModel {
                                 NEXT: STATE_ACTIONS.PROCESS
                             },
                             after: {
-                                1000: { target: STATE_ACTIONS.PROCESS }
+                                100: { target: STATE_ACTIONS.PROCESS }
                             }
                         },
                         [STATE_ACTIONS.PROCESS]: {
-                            on: {
-                                NEXT: STATE_ACTIONS.END_PROCESS
+                            ...this._resultsStateSchema,
+                            onDone: {
+                                target: STATE_ACTIONS.END_PROCESS,
+                                actions: assign({
+                                    win: (context) => (this._win ? context.win + 1 : context.win),
+                                    lose: (context) => (this._lose ? context.lose + 1 : context.lose),
+                                    draw: (context) => (this._draw ? context.draw + 1 : context.draw),
+                                    result: () => this._draw ? RESULT.DRAW : this._win ? RESULT.WIN : RESULT.LOSE,
+                                })
                             }
                         },
                         [STATE_ACTIONS.END_PROCESS]: {
                             after: {
-                                500: { target: STATE_ACTIONS.COMPLETE }
+                                2000: { target: "ADDITIONAL_END_PROCESS" }
+                            }
+                        },
+                        ["ADDITIONAL_END_PROCESS"]: {
+                            after: {
+                                1000: { target: STATE_ACTIONS.COMPLETE }
                             }
                         },
                         [STATE_ACTIONS.COMPLETE]: {

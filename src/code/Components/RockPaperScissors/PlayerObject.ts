@@ -8,6 +8,7 @@ import { RPS_GAME_STATE } from "./RockPaperScissorsModel";
 export class PlayerObject extends Container {
     private _playerType: PLAYER_TYPE;
     private _handObject: HandObject;
+    private _onWin: boolean;
 
     protected _subject: Subject<RPS_GAME_STATE>;
 
@@ -17,6 +18,8 @@ export class PlayerObject extends Container {
 
     constructor(playerType: PLAYER_TYPE, selectedID?: SELECTION) {
         super();
+
+        this._onWin = false;
 
         this._subject = new Subject<RPS_GAME_STATE>();
         this._playerType = playerType;
@@ -52,8 +55,6 @@ export class PlayerObject extends Container {
 
             gsap.killTweensOf(this._handObject);
 
-            console.log("ENTER RPS");
-
             this._handObject.showInitialPose();
 
             let fromPosX = this._playerType == PLAYER_TYPE.COMP ? 1000 : -1000;
@@ -63,7 +64,6 @@ export class PlayerObject extends Container {
                 x: toPosX,
                 ease: Back.easeOut.config(2),
                 onComplete: () => {
-                    console.log("DONE ENTER RPS");
                     this._subject.next(RPS_GAME_STATE.ENTER);
                     resolve();
                 }
@@ -89,7 +89,6 @@ export class PlayerObject extends Container {
         return new Promise<void>((resolve, reject) => {
             let upDown = gsap.timeline({
                 onComplete: () => {
-                    // this._handObject.showSelected();
                     this._subject.next(RPS_GAME_STATE.SHOW);
                     resolve();
                 }
@@ -110,10 +109,31 @@ export class PlayerObject extends Container {
         });
     }
 
+    public win(): void {
+        if (this._onWin)
+            return;
+
+        gsap.to(this._handObject, 0.25, { scaleX: this._handObject.scale.x * 2, scaleY: this._handObject.scale.y * 2 })
+        gsap.fromTo(this._handObject, 1, { rotation: 1.4 }, {
+            rotation: 1.6,
+            repeat: -1
+        }).yoyo(true);
+        this._onWin = true;
+    }
+
     public exit(): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            this._subject.next(RPS_GAME_STATE.EXIT);
-            resolve();
+
+            let fromPosX = this._playerType == PLAYER_TYPE.COMP ? 200 : -200;
+            let toPosX = this._playerType == PLAYER_TYPE.COMP ? 1000 : -1000;
+
+            gsap.fromTo(this._handObject, 1, { x: fromPosX }, {
+                x: toPosX,
+                ease: Back.easeOut.config(2),
+                onComplete: () => {
+                    resolve();
+                }
+            }).delay(0.5);
         });
     }
 }

@@ -16,7 +16,7 @@ export class SelectionController extends ComponentController {
     }
 
     public onUpdateGameState(state: any) {
-
+        console.log(state.value);
         if (state.context.state == GAME_LOOP_STATES.START) {
             console.log("SLCT", state.value);
             if (state.matches(`${GAME_LOOP_STATES.START}.${STATE_ACTIONS.SETUP}`)) {

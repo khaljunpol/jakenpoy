@@ -11,18 +11,10 @@ export class SelectionModel extends ComponentModel {
 
     constructor(name: string) {
         super(name);
-
-        console.log(this);
-    }
-
-    public get key(): string {
-        return "SelectionModel";
     }
 
     protected createStateContext(): any {
-        return {
-            state: SELECTION_STATE.IDLE
-        }
+        return null;
     }
 
     protected createStateSchema(): any {
@@ -42,13 +34,7 @@ export class SelectionModel extends ComponentModel {
     }
 
     protected createStateMachine(name: string): any {
-
-        return createMachine({
-            id: SelectionModelKey,
-            initial: SELECTION_STATE.IDLE,
-            context: this._context,
-            ...this._stateSchema
-        });
+        return null;
     }
 
 }

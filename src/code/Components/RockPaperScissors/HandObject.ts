@@ -36,15 +36,14 @@ export class HandObject extends Container {
             newSprite.anchor.set(0.5);
             newSprite.visible = false;
         });
-
-        console.log(this);
     }
 
-    public setSelectedHand(selection: SELECTION){
+    public setSelectedHand(selection: SELECTION) {
         this._selectedID = selection;
     }
 
     public showInitialPose(): void {
+        this.reset();
         this._sprites[SELECTION.ROCK].visible = true;
     }
 

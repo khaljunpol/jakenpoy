@@ -24,6 +24,9 @@ export class RockPaperScissorsView extends ComponentView {
             if (this._isShown)
                 return;
 
+            this._playerObject.reset();
+            this._compObject.reset();
+
             super.show();
 
             Promise.all([
@@ -33,6 +36,23 @@ export class RockPaperScissorsView extends ComponentView {
                 this.onCompleteState(RPS_GAME_STATE.ENTER);
                 resolve();
             });
+        });
+    }
+
+    public hide(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            if (!this._isShown)
+                return;
+
+            Promise.all([
+                this._playerObject.exit(),
+                this._compObject.exit(),
+            ]).then(() => {
+                // this.onCompleteState(RPS_GAME_STATE.ENTER);
+                super.hide();
+                resolve();
+            });
+
         });
     }
 
@@ -58,6 +78,15 @@ export class RockPaperScissorsView extends ComponentView {
                 resolve();
             });
         });
+    }
+
+    public showWin(win: boolean) {
+        if (win) {
+            this._playerObject.win();
+        }
+        else {
+            this._compObject.win();
+        }
     }
 
     public onCompleteState(state: RPS_GAME_STATE): void {

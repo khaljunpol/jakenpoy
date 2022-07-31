@@ -14,7 +14,9 @@ export class JnPGameController extends GameController {
         return new JnPGameView(name);
     }
 
-    public start(): void{
-        super.start();
+    public sendAction(action: string): void {
+        super.sendAction(action);
+
+        console.log("SEND ACTION", action);
     }
 }
