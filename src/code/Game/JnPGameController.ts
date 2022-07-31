@@ -16,5 +16,5 @@ export class JnPGameController extends GameController {
 
     public start(): void{
         super.start();
-    }   
+    }
 }

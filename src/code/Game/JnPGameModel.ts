@@ -1,10 +1,14 @@
 import { GameModel, GAME_LOOP_STATES, STATE_ACTIONS } from "jpgames-game-implementation-pixi";
 import { assign, createMachine } from "xstate";
-import { SelectionModelKey } from "../JakEnPoyConstants";
+import { RockPaperScissorsModelKey, SELECTION, SelectionModelKey } from "../JakEnPoyConstants";
 
 export class JnPGameModel extends GameModel {
 
     protected _selectionStateSchema: any;
+    protected _rockPaperScissorsStateSchema: any;
+
+    protected _playerHand: SELECTION;
+    protected _compHand: SELECTION;
 
     public attachStateSchema(key: string, schema: any): void {
         super.attachStateSchema(key, schema);
@@ -12,7 +16,32 @@ export class JnPGameModel extends GameModel {
         if (key == SelectionModelKey) {
             this._selectionStateSchema = schema;
         }
+
+        if (key == RockPaperScissorsModelKey) {
+            this._rockPaperScissorsStateSchema = schema;
+        }
     }
+
+    public setPlayerHand(hand: SELECTION) {
+        this._playerHand = hand;
+        console.log("SET PLAYER HAND ", this._playerHand);
+    }
+
+    public setCompHand(hand: SELECTION) {
+        this._compHand = hand;
+    }
+
+    protected createCoreLoopContext(): any {
+        return {
+            state: GAME_LOOP_STATES.START,
+            win: 0,
+            lose: 0,
+            draw: 0,
+            playerHand: SELECTION.ROCK,
+            compHand: SELECTION.ROCK
+        }
+    }
+
     protected createGameLoopMachine(name: string): any {
 
         let idName = name + "Loop"
@@ -26,6 +55,9 @@ export class JnPGameModel extends GameModel {
                     on: {
                         START: GAME_LOOP_STATES.START
                     },
+                    after: {
+                        1000: { target: GAME_LOOP_STATES.START }
+                    }
                 },
                 [GAME_LOOP_STATES.START]: {
                     initial: STATE_ACTIONS.SETUP,
@@ -34,25 +66,26 @@ export class JnPGameModel extends GameModel {
                             on: {
                                 NEXT: STATE_ACTIONS.PROCESS
                             },
+                            after: {
+                                1000: { target: STATE_ACTIONS.PROCESS }
+                            }
                         },
                         [STATE_ACTIONS.PROCESS]: {
-                            // invoke: {
-                            //     id: SelectionModelKey,
-                            //     src: this._selectionStateMachine,
-                            //     onDone: {
-                            //         target: STATE_ACTIONS.COMPLETE,
-                            //         actions: assign({
-                            //             action: () => console.log("DONE")
-                            //         })
-                            //     },
-                            // },
                             ...this._selectionStateSchema,
                             onDone: {
-                                target: STATE_ACTIONS.COMPLETE
+                                target: STATE_ACTIONS.END_PROCESS,
+                                actions: assign({
+                                    playerHand: () => this._playerHand
+                                })
                             },
                         },
+                        [STATE_ACTIONS.END_PROCESS]: {
+                            after: {
+                                500: { target: STATE_ACTIONS.COMPLETE }
+                            }
+                        },
                         [STATE_ACTIONS.COMPLETE]: {
-                            type: 'final'
+                            type: 'final',
                         }
                     },
                     onDone: {
@@ -68,11 +101,23 @@ export class JnPGameModel extends GameModel {
                         [STATE_ACTIONS.SETUP]: {
                             on: {
                                 NEXT: STATE_ACTIONS.PROCESS
+                            },
+                            after: {
+                                1000: { target: STATE_ACTIONS.PROCESS }
                             }
                         },
                         [STATE_ACTIONS.PROCESS]: {
-                            on: {
-                                NEXT: STATE_ACTIONS.COMPLETE
+                            ...this._rockPaperScissorsStateSchema,
+                            onDone: {
+                                target: STATE_ACTIONS.END_PROCESS,
+                                actions: assign({
+                                    compHand: () => this._compHand
+                                })
+                            }
+                        },
+                        [STATE_ACTIONS.END_PROCESS]: {
+                            after: {
+                                500: { target: STATE_ACTIONS.COMPLETE }
                             }
                         },
                         [STATE_ACTIONS.COMPLETE]: {
@@ -92,11 +137,19 @@ export class JnPGameModel extends GameModel {
                         [STATE_ACTIONS.SETUP]: {
                             on: {
                                 NEXT: STATE_ACTIONS.PROCESS
+                            },
+                            after: {
+                                1000: { target: STATE_ACTIONS.PROCESS }
                             }
                         },
                         [STATE_ACTIONS.PROCESS]: {
                             on: {
-                                NEXT: STATE_ACTIONS.COMPLETE
+                                NEXT: STATE_ACTIONS.END_PROCESS
+                            }
+                        },
+                        [STATE_ACTIONS.END_PROCESS]: {
+                            after: {
+                                500: { target: STATE_ACTIONS.COMPLETE }
                             }
                         },
                         [STATE_ACTIONS.COMPLETE]: {

@@ -1,4 +1,4 @@
-import { ComponentModel, STATE_ACTIONS } from "jpgames-game-implementation-pixi";
+import { ComponentModel } from "jpgames-game-implementation-pixi";
 import { createMachine } from "xstate";
 import { SelectionModelKey } from "../../JakEnPoyConstants";
 
@@ -21,7 +21,7 @@ export class SelectionModel extends ComponentModel {
 
     protected createStateContext(): any {
         return {
-            state: SELECTION_STATE
+            state: SELECTION_STATE.IDLE
         }
     }
 

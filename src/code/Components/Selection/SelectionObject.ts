@@ -24,10 +24,10 @@ export class SelectionObject extends Container {
         let sprite: Sprite = new Sprite(Texture.from(`assets/${spriteName}.png`));
         this.addChild(sprite);
 
-        sprite.scale.set(0.1);
+        sprite.scale.set(0.2);
         sprite.pivot.set(0.5);
         sprite.anchor.set(0.5);
-
+        
         this._spriteBtn = sprite;
 
         this._spriteBtn.buttonMode = true;

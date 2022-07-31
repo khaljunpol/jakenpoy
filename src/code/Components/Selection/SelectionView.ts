@@ -5,6 +5,8 @@ import { SelectionObject } from "./SelectionObject";
 
 export class SelectionView extends ComponentView {
 
+    private selectionOffset: number = 300;
+
     protected _selections: SelectionObject[];
 
     constructor(name: string) {
@@ -13,8 +15,6 @@ export class SelectionView extends ComponentView {
         this.createSelection();
 
         this.onResize();
-
-        this.visible = false;
 
         console.log(this);
     }
@@ -45,8 +45,8 @@ export class SelectionView extends ComponentView {
             gsap.fromTo(this._selections, 0.5, { alpha: 1 }, {
                 alpha: 0,
                 onComplete: () => {
-                    resolve();
                     super.hide();
+                    resolve();
                 }
             }).delay(0.5);
         });
@@ -55,7 +55,7 @@ export class SelectionView extends ComponentView {
     public onResize(): void {
         super.onResize();
 
-        let offset = -200;
+        let offset = -this.selectionOffset;
 
         if (window.innerHeight > window.innerWidth) {
 
@@ -63,7 +63,7 @@ export class SelectionView extends ComponentView {
                 this._selections.forEach(selection => {
                     selection.position.x = 0;
                     selection.position.y = offset;
-                    offset += 200;
+                    offset += this.selectionOffset;
                 });
             }
         }
@@ -72,7 +72,7 @@ export class SelectionView extends ComponentView {
                 this._selections.forEach(selection => {
                     selection.position.y = 0;
                     selection.position.x = offset;
-                    offset += 200;
+                    offset += this.selectionOffset;
                 });
             }
         }
