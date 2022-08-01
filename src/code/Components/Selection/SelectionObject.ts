@@ -6,7 +6,7 @@ import { SELECTION } from "../../Utils/JakEnPoyConstants";
 
 export class SelectionObject extends Container {
 
-    private _name: string;
+    private _isClicked = false;
     private _selectionId: SELECTION;
 
     protected _spriteBtn: Sprite;
@@ -19,7 +19,6 @@ export class SelectionObject extends Container {
     constructor(spriteName: string, selectionID: SELECTION) {
         super();
 
-        this._name = spriteName;
         this._selectionId = selectionID;
 
         let sprite: Sprite = new Sprite(Texture.from(`assets/${spriteName}.png`));
@@ -44,14 +43,20 @@ export class SelectionObject extends Container {
         }
     }
 
-    public reset(): void{
+    public reset(): void {
         gsap.killTweensOf(this._spriteBtn);
         this._spriteBtn.scale.set(0.2);
+        this._isClicked = false;
     }
 
     private onClick(): void {
+        if (this._isClicked)
+            return;
+
         this._subject.next(this._selectionId);
 
         gsap.to(this._spriteBtn.scale, { duration: 0.5, x: 0.3, y: 0.3 });
+
+        this._isClicked = true;
     }
 }

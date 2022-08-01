@@ -25,11 +25,11 @@ export class PlayerObject extends Container {
 
         this._handObject = new HandObject(handId);
 
-        this._handObject.position.x = -1000;
+        this._handObject.position.x = -this.offScreenXPos();
         this._handObject.rotation = 1.5;
 
         if (this._playerType == PLAYER_TYPE.COMP) {
-            this._handObject.position.x = 1000;
+            this._handObject.position.x = this.offScreenXPos();
             this._handObject.scale.y = -1;
             this._handObject.rotation = 1.6;
         }
@@ -43,11 +43,11 @@ export class PlayerObject extends Container {
         this._handObject.scale.x = 1;
         this._handObject.scale.y = 1;
 
-        this._handObject.position.x = -1000;
+        this._handObject.position.x = -this.offScreenXPos();
         this._handObject.rotation = 1.5;
 
         if (this._playerType == PLAYER_TYPE.COMP) {
-            this._handObject.position.x = 1000;
+            this._handObject.position.x = this.offScreenXPos();
             this._handObject.scale.y = -1;
         }
     }
@@ -58,7 +58,7 @@ export class PlayerObject extends Container {
 
             this._handObject.showInitialPose();
 
-            let fromPosX = this._playerType == PLAYER_TYPE.COMP ? 1000 : -1000;
+            let fromPosX = this._playerType == PLAYER_TYPE.COMP ? this.offScreenXPos() : -this.offScreenXPos();
             let toPosX = this._playerType == PLAYER_TYPE.COMP ? 300 : -300;
 
             gsap.fromTo(this._handObject, { x: fromPosX }, {
@@ -133,7 +133,7 @@ export class PlayerObject extends Container {
         return new Promise<void>((resolve, reject) => {
 
             let fromPosX = this._playerType == PLAYER_TYPE.COMP ? 200 : -200;
-            let toPosX = this._playerType == PLAYER_TYPE.COMP ? 1000 : -1000;
+            let toPosX = this._playerType == PLAYER_TYPE.COMP ? this.offScreenXPos() : -this.offScreenXPos();
 
             gsap.fromTo(this._handObject, { x: fromPosX }, {
                 duration: 1,
@@ -144,5 +144,9 @@ export class PlayerObject extends Container {
                 }
             }).delay(0.5);
         });
+    }
+
+    private offScreenXPos(): number{
+        return (window.innerWidth / 2) + 300;
     }
 }

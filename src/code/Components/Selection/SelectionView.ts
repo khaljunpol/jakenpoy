@@ -31,7 +31,6 @@ export class SelectionView extends ComponentView {
 
         this.addChild(this._logo, this._select);
 
-
         this.createSelection();
 
         this.onResize();
@@ -123,6 +122,8 @@ export class SelectionView extends ComponentView {
         setTimeout(() => {
             this._subject.next(type);
         }, 1000)
+
+        this.interactiveChildren = false;
     }
 
     private createSelection() {
