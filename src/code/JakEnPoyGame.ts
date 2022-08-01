@@ -1,11 +1,12 @@
 import { IGameController } from "jpgames-game-framework";
-import { ComponentController, GameController } from "jpgames-game-implementation-pixi";
+import { ComponentController } from "jpgames-game-implementation-pixi";
 import { Game } from "jpgames-game-implementation-pixi/src/Game/Game";
 import { ResultsController } from "./Components/Results/ResultsController";
 import { RockPaperScissorsController } from "./Components/RockPaperScissors/RockPaperScissorsController";
 import { SelectionController } from "./Components/Selection/SelectionController";
 import { JnPGameController } from "./Game/JnPGameController";
-import { ResultsModelKey, RockPaperScissorsModelKey, SelectionModelKey } from "./JakEnPoyConstants";
+import { ResultsModelKey, RockPaperScissorsModelKey, SelectionModelKey } from "./Utils/JakEnPoyConstants";
+
 
 export class JakEnPoyGame extends Game {
 
@@ -52,6 +53,11 @@ export class JakEnPoyGame extends Game {
             .add("win", "../assets/win.png")
             .add("lose", "../assets/lose.png")
             .add("draw", "../assets/draw.png")
+            .add("jak", "../assets/jak.png")
+            .add("en", "../assets/en.png")
+            .add("poy", "../assets/poy.png")
+            .add("logo", "../assets/logo.png")
+            .add("select", "../assets/select.png")
             .load(() => this.onLoadComplete())
     }
 

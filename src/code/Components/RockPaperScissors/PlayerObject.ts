@@ -1,14 +1,13 @@
 import gsap, { Back } from "gsap";
 import { Container } from "pixi.js";
 import { Subject } from "rxjs";
-import { PLAYER_TYPE, SELECTION } from "../../JakEnPoyConstants";
+import { PLAYER_TYPE, SELECTION } from "../../Utils/JakEnPoyConstants";
 import { HandObject } from "./HandObject";
 import { RPS_GAME_STATE } from "./RockPaperScissorsModel";
 
 export class PlayerObject extends Container {
     private _playerType: PLAYER_TYPE;
     private _handObject: HandObject;
-    private _onWin: boolean;
 
     protected _subject: Subject<RPS_GAME_STATE>;
 
@@ -18,8 +17,6 @@ export class PlayerObject extends Container {
 
     constructor(playerType: PLAYER_TYPE, selectedID?: SELECTION) {
         super();
-
-        this._onWin = false;
 
         this._subject = new Subject<RPS_GAME_STATE>();
         this._playerType = playerType;
@@ -41,6 +38,11 @@ export class PlayerObject extends Container {
     }
 
     public reset(): void {
+        gsap.killTweensOf(this._handObject);
+
+        this._handObject.scale.x = 1;
+        this._handObject.scale.y = 1;
+
         this._handObject.position.x = -1000;
         this._handObject.rotation = 1.5;
 
@@ -50,17 +52,17 @@ export class PlayerObject extends Container {
         }
     }
 
+    // Show playing hands
     public enter(): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-
-            gsap.killTweensOf(this._handObject);
 
             this._handObject.showInitialPose();
 
             let fromPosX = this._playerType == PLAYER_TYPE.COMP ? 1000 : -1000;
             let toPosX = this._playerType == PLAYER_TYPE.COMP ? 300 : -300;
 
-            gsap.fromTo(this._handObject, 1, { x: fromPosX }, {
+            gsap.fromTo(this._handObject, { x: fromPosX }, {
+                duration: 1,
                 x: toPosX,
                 ease: Back.easeOut.config(2),
                 onComplete: () => {
@@ -71,20 +73,26 @@ export class PlayerObject extends Container {
         });
     }
 
-    public prepare(): Promise<void> {
+    // Anticipate playing hands
+    public prepare(counterCb?: Function): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             let upDown = gsap.timeline({
-                repeat: 1, onComplete: () => {
+                onComplete: () => {
                     this._subject.next(RPS_GAME_STATE.PREPARE);
                     resolve();
                 }
             });
 
-            upDown.to(this._handObject, 0.25, { y: -100, ease: Back.easeOut.config(3) })
-                .to(this._handObject, 0.25, { y: 100, ease: Back.easeOut.config(3) })
+            upDown.to(this._handObject, { duration: 0.25, y: -100, ease: Back.easeOut.config(3) })
+                .to(this._handObject, { duration: 0.25, y: 100, ease: Back.easeOut.config(3) })
+                .add(counterCb?.(0))
+                .to(this._handObject, { duration: 0.25, y: -100, ease: Back.easeOut.config(3) })
+                .to(this._handObject, { duration: 0.25, y: 100, ease: Back.easeOut.config(3) })
+                .add(counterCb?.(1))
         });
     }
 
+    // Show played hand
     public show(selectedID: SELECTION): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             let upDown = gsap.timeline({
@@ -100,34 +108,35 @@ export class PlayerObject extends Container {
 
             let addSequence = () => {
                 this._handObject.showSelected();
-                gsap.to(this._handObject, 0.25, { x: toPosX }).yoyo(true);
+                gsap.to(this._handObject, { duration: 0.25, x: toPosX }).yoyo(true);
             }
 
-            upDown.to(this._handObject, 0.25, { y: -100, ease: Back.easeOut.config(2) })
+            upDown.to(this._handObject, { duration: 0.25, y: -100, ease: Back.easeOut.config(2) })
                 .add(addSequence)
-                .to(this._handObject, 0.25, { y: 0, ease: Back.easeOut.config(2) })
+                .to(this._handObject, { duration: 0.25, y: 0, ease: Back.easeOut.config(2) })
         });
     }
 
+    // Emphasize winning hand
     public win(): void {
-        if (this._onWin)
-            return;
 
-        gsap.to(this._handObject, 0.25, { scaleX: this._handObject.scale.x * 2, scaleY: this._handObject.scale.y * 2 })
-        gsap.fromTo(this._handObject, 1, { rotation: 1.4 }, {
+        gsap.to(this._handObject.scale, { duration: 0.5, x: this._handObject.scale.x * 1.2, y: this._handObject.scale.y * 1.2 });
+        gsap.fromTo(this._handObject, { rotation: 1.4 }, {
+            duration: 1,
             rotation: 1.6,
             repeat: -1
         }).yoyo(true);
-        this._onWin = true;
     }
 
+    // Hide playing hands
     public exit(): Promise<void> {
         return new Promise<void>((resolve, reject) => {
 
             let fromPosX = this._playerType == PLAYER_TYPE.COMP ? 200 : -200;
             let toPosX = this._playerType == PLAYER_TYPE.COMP ? 1000 : -1000;
 
-            gsap.fromTo(this._handObject, 1, { x: fromPosX }, {
+            gsap.fromTo(this._handObject, { x: fromPosX }, {
+                duration: 1,
                 x: toPosX,
                 ease: Back.easeOut.config(2),
                 onComplete: () => {

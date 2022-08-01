@@ -1,5 +1,5 @@
 import { Container, Sprite, Texture } from "pixi.js";
-import { SELECTION } from "../../JakEnPoyConstants";
+import { SELECTION } from "../../Utils/JakEnPoyConstants";
 
 export class HandObject extends Container {
     private _name: string;
@@ -55,7 +55,6 @@ export class HandObject extends Container {
                 this._sprites[key].visible = true;
             }
         }
-
     }
 
     public reset(): void {

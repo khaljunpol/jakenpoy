@@ -1,15 +1,12 @@
 import { ComponentModel } from "jpgames-game-implementation-pixi";
-import { createMachine } from "xstate";
-import { RockPaperScissorsModelKey } from "../../JakEnPoyConstants";
 
-export enum RPS_GAME_STATE{
+export enum RPS_GAME_STATE {
     ENTER = "ENTER",
     PREPARE = "PREPARE",
     SHOW = "SHOW",
     EXIT = "EXIT"
 }
-export class RockPaperScissorsModel extends ComponentModel
-{
+export class RockPaperScissorsModel extends ComponentModel {
     protected createStateContext(): any {
         return null;
     }

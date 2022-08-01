@@ -1,7 +1,8 @@
 import { IModel, IView } from "jpgames-game-framework";
 import { ComponentController, GAME_LOOP_STATES, STATE_ACTIONS } from "jpgames-game-implementation-pixi";
 import { JnPGameModel } from "../../Game/JnPGameModel";
-import { RESULT, SELECTION } from "../../JakEnPoyConstants";
+import { RESULT, SELECTION } from "../../Utils/JakEnPoyConstants";
+import { JakEnPoyUtils } from "../../Utils/JakEnPoyUtils";
 import { RockPaperScissorsModel, RPS_GAME_STATE } from "./RockPaperScissorsModel";
 import { RockPaperScissorsView } from "./RockPaperScissorsView";
 
@@ -13,6 +14,7 @@ export class RockPaperScissorsController extends ComponentController {
     public init(): void {
         super.init();
 
+        // Subscribe view to main game state
         this.componentView.subject.subscribe({
             next: (type) => this.onCompleteState(type)
         });
@@ -20,32 +22,36 @@ export class RockPaperScissorsController extends ComponentController {
 
     public onUpdateGameState(state: any) {
 
+        // If on Play Phase
         if (state.context.state == GAME_LOOP_STATES.PLAY) {
-            // console.log(state.context);
 
+            // Collect selected hand for player and comp from main game context
             this._playerHand = state.context.playerHand;
             this._compHand = state.context.compHand;
 
+            // Display main container
             if (state.matches(`${GAME_LOOP_STATES.PLAY}.${STATE_ACTIONS.SETUP}`)) {
                 this.componentView.show();
             }
         }
 
+        // If on End Phase
         if (state.context.state == GAME_LOOP_STATES.END) {
-            console.log("1", state.context.result);
+
+            // If on End Process phase
             if (state.matches(`${GAME_LOOP_STATES.END}.${STATE_ACTIONS.END_PROCESS}`)) {
-                console.log("2", state.context.result);
-                if (!state.context.draw) {
+
+                if (state.context.result !== RESULT.DRAW) {
+                    // Emphasize the winning hand
                     (this.componentView as RockPaperScissorsView).showWin(state.context.result == RESULT.WIN);
                 }
             }
 
+            // Hide/Exit the playing hand
             if (state.matches(`${GAME_LOOP_STATES.END}.ADDITIONAL_END_PROCESS`)) {
                 this.componentView.hide();
             }
         }
-
-        
     }
 
     protected createModel(name: string): IModel {
@@ -62,12 +68,15 @@ export class RockPaperScissorsController extends ComponentController {
                 this._gameController.sendAction("DONE_ENTER");
                 (this.componentView as RockPaperScissorsView).prepare();
                 break;
+
             case RPS_GAME_STATE.PREPARE:
                 this._gameController.sendAction("DONE_PREPARE");
-                this._compHand = this.randomizeCompHand();
+
+                this._compHand = JakEnPoyUtils.randomizeCompHand();
                 (this._gameController.gameModel as JnPGameModel).setCompHand(this._compHand);
                 (this.componentView as RockPaperScissorsView).showHand(this._playerHand, this._compHand);
                 break;
+
             case RPS_GAME_STATE.SHOW:
                 // Continue to exit
                 this._gameController.sendAction("DONE_SHOW");
@@ -77,13 +86,4 @@ export class RockPaperScissorsController extends ComponentController {
                 break;
         }
     }
-
-    public randomizeCompHand(): SELECTION {
-        let values = Object.keys(SELECTION)
-        let idx = Math.floor(Math.random() * values.length);
-        let randValue = values[idx];
-
-        return SELECTION[randValue];
-    }
-
 }

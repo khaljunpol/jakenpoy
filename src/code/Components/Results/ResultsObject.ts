@@ -1,9 +1,8 @@
 import gsap, { Back } from "gsap";
 import { Container, Sprite, Texture } from "pixi.js";
-import { RESULT } from "../../JakEnPoyConstants";
+import { RESULT } from "../../Utils/JakEnPoyConstants";
 
 export class ResultsObject extends Container {
-    private _name: string;
     private _decisionID: RESULT;
 
     protected _sprites: Record<string, Sprite>;
@@ -48,7 +47,8 @@ export class ResultsObject extends Container {
 
     public showResult(): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            gsap.fromTo(this, 1, { alpha: 0 }, {
+            gsap.fromTo(this, { alpha: 0 }, {
+                duration: 1,
                 alpha: 1,
                 ease: Back.easeOut.config(2),
                 onComplete: () => {
@@ -60,7 +60,8 @@ export class ResultsObject extends Container {
 
     public hideResult(): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            gsap.fromTo(this, 1, { alpha: 1 }, {
+            gsap.fromTo(this, { alpha: 1 }, {
+                duration: 1,
                 alpha: 0,
                 ease: Back.easeOut.config(2),
                 onComplete: () => {
@@ -78,9 +79,6 @@ export class ResultsObject extends Container {
                 this._sprites[key].visible = true;
             }
         }
-
-        console.log(this._sprites[this._decisionID]);
-
     }
 
     public reset(): void {

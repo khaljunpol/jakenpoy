@@ -1,5 +1,5 @@
 import { ComponentView } from "jpgames-game-implementation-pixi";
-import { RESULT } from "../../JakEnPoyConstants";
+import { RESULT } from "../../Utils/JakEnPoyConstants";
 import { RESULT_STATE } from "./ResultsModel";
 import { ResultsObject } from "./ResultsObject";
 
@@ -14,8 +14,6 @@ export class ResultsView extends ComponentView {
         this.addChild(this._resultsObject);
 
         this.onResize();
-
-        console.log(this);
     }
 
     public showResult(result: RESULT): Promise<void> {
@@ -31,7 +29,7 @@ export class ResultsView extends ComponentView {
 
             this._resultsObject.showResult().then(() => {
 
-            this.onCompleteState(RESULT_STATE.PRESENT_START);
+                this.onCompleteState(RESULT_STATE.PRESENT_START);
                 resolve();
             })
 
@@ -41,7 +39,6 @@ export class ResultsView extends ComponentView {
     public hideResult(): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             this._resultsObject.hideResult().then(() => {
-                // this.onCompleteState(RESULT_STATE.PRESENTED);
                 resolve();
             })
 

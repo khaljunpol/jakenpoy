@@ -1,6 +1,4 @@
 import { ComponentModel } from "jpgames-game-implementation-pixi";
-import { createMachine } from "xstate";
-import { SelectionModelKey } from "../../JakEnPoyConstants";
 
 export enum SELECTION_STATE {
     IDLE = "IDLE",

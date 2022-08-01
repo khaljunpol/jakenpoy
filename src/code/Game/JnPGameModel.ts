@@ -1,7 +1,6 @@
 import { GameModel, GAME_LOOP_STATES, STATE_ACTIONS } from "jpgames-game-implementation-pixi";
 import { assign, createMachine } from "xstate";
-import { RESULT_STATE } from "../Components/Results/ResultsModel";
-import { RESULT, ResultsModelKey, RockPaperScissorsModelKey, SELECTION, SelectionModelKey } from "../JakEnPoyConstants";
+import { RESULT, ResultsModelKey, RockPaperScissorsModelKey, SELECTION, SelectionModelKey } from "../Utils/JakEnPoyConstants";
 
 export class JnPGameModel extends GameModel {
 
@@ -33,14 +32,13 @@ export class JnPGameModel extends GameModel {
 
     public setPlayerHand(hand: SELECTION) {
         this._playerHand = hand;
-        console.log("SET PLAYER HAND ", this._playerHand);
     }
 
     public setCompHand(hand: SELECTION) {
         this._compHand = hand;
     }
 
-    public setWinLoseDraw(win: boolean, lose: boolean, draw: boolean){
+    public setWinLoseDraw(win: boolean, lose: boolean, draw: boolean) {
         this._win = win;
         this._lose = lose;
         this._draw = draw;
