@@ -5,6 +5,7 @@
   "main": "./index.html",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "rimraf dist && rimraf node_modules",
     "npm-reset": "rimraf node_modules && npm cache verify && npm i",
     "start": "webpack-dev-server --host 0.0.0.0",
     "build": "webpack --mode production ",
