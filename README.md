@@ -19,6 +19,12 @@ This module requires the following modules:
 
 Install node modules and packages
 ```node
+// cd to jpgames-framework/game-implementation-pixi
+// then:
+npm install
+
+// cd to this game (jakenpoy) folder
+// then:
 npm install
 ```
 # Running the game
